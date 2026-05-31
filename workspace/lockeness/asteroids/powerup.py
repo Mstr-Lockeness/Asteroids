@@ -9,4 +9,4 @@ class Powerup(CircleShape):
         pygame.draw.circle(screen, "yellow", self.position, self.radius, 2)
 
     def update(self, dt):
-        self.position += self.velocity * dt
+        self.position += (self.velocity * dt * .75)
