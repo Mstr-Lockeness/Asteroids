@@ -27,6 +27,14 @@ def main():
     asteroid_field = AsteroidField()
     font = pygame.font.Font(None, 36)
     score = 0
+    high_score = 0
+
+    try:
+        with open("highscore.txt", "r") as hs:
+            high_score = int(hs.read())
+    except (FileNotFoundError, ValueError):
+        high_score = 0
+
     dt = 0
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
@@ -45,6 +53,8 @@ def main():
                     asteroid.split()
                     shot.kill()
                     score += 1
+                    if score > high_score:
+                        high_score = score
                     if random.random() < .05:
                         new_powerup = Powerup(drop_pos.x, drop_pos.y, POWERUP_RADIUS)
                         new_shotgun_velocity = pygame.Vector2(0, 1).rotate(random.uniform(0, 360))
@@ -57,12 +67,16 @@ def main():
         for asteroid in asteroids:
             if asteroid.collides_with(player):
                 log_event("player_hit")
+                with open("highscore.txt", "w") as hs:
+                    hs.write(str(high_score))
                 print(f"Game over! Your score is {score}")
                 sys.exit()
         for item in drawable:
             item.draw(screen)
         score_surf = font.render(f"Score: {score}", True, "white")
         screen.blit(score_surf, (10, 10))
+        high_score_surf = font.render(f"High Score: {high_score}", True, "white")
+        screen.blit(high_score_surf, (10,50))
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
